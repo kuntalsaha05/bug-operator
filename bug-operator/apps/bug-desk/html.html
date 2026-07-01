@@ -1433,9 +1433,24 @@
     location.reload();
   }
 
+
   function redirectToLemmaAuth() {
-    if (client) client.auth.redirectToAuth();
-    else alert('SDK not loaded yet. Please wait.');
+    try {
+      // Try SDK method first
+      if (client && client.auth && typeof client.auth.redirectToAuth === 'function') {
+        client.auth.redirectToAuth();
+        return;
+      }
+      // Fallback: build the Lemma OAuth redirect URL manually
+      const cfg = window.__LEMMA_CONFIG__ || {};
+      const base = (cfg.apiUrl || 'https://api.lemma.work').replace(/\/$/, '');
+      const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+      window.location.href = `${base}/st/auth?redirectUrl=${returnUrl}`;
+    } catch(e) {
+      // Last-resort fallback
+      const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+      window.location.href = `https://api.lemma.work/st/auth?redirectUrl=${returnUrl}`;
+    }
   }
 
   function logout() {
