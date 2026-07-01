@@ -1,0 +1,19 @@
+{
+  "name": "mark_stale",
+  "description": "Finds bugs with no activity for 14+ days and marks them as stale by appending a note.",
+  "type": "API",
+  "code": { "$file": "code.py" },
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "bugs",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read",
+          "datastore.record.write"
+        ]
+      }
+    ]
+  }
+}

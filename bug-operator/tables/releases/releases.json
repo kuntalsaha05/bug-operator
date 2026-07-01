@@ -1,0 +1,10 @@
+{
+  "name": "releases",
+  "primary_key_column": "id",
+  "enable_rls": false,
+  "columns": [
+    { "name": "version", "type": "TEXT", "required": true, "max_length": 50 },
+    { "name": "release_notes", "type": "TEXT", "required": true }
+  ],
+  "config": {}
+}

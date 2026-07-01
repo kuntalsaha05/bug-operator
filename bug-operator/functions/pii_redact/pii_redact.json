@@ -1,0 +1,7 @@
+{
+  "name": "pii_redact",
+  "description": "Scrubs sensitive data (passwords, API keys, credit cards, bearer tokens) from bug reports before they are sent to the AI triage agent.",
+  "type": "API",
+  "code": { "$file": "code.py" },
+  "permissions": {}
+}

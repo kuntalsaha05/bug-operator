@@ -1,0 +1,36 @@
+{
+  "name": "stale-pruner-workflow",
+  "description": "Daily cron workflow that executes the mark_stale function to flag tickets with no activity.",
+  "start": { "type": "MANUAL" },
+  "nodes": [
+    {
+      "id": "start_node",
+      "type": "FORM",
+      "label": "Start",
+      "config": {
+        "input_schema": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    {
+      "id": "mark_stale_node",
+      "type": "FUNCTION",
+      "label": "Mark Stale Bugs",
+      "config": {
+        "function_name": "mark_stale",
+        "input_mapping": {}
+      }
+    },
+    {
+      "id": "end",
+      "type": "END",
+      "label": "Complete"
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "start_node", "target": "mark_stale_node" },
+    { "id": "e2", "source": "mark_stale_node", "target": "end" }
+  ]
+}

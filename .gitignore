@@ -1,0 +1,10 @@
+# Logs
+*.log
+login.log
+
+# OS/System files
+.DS_Store
+Thumbs.db
+
+# Temp validation files
+**/temp_validate.js

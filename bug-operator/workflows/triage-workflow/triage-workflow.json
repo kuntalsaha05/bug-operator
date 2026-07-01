@@ -1,0 +1,140 @@
+{
+  "name": "triage-workflow",
+  "description": "Full triage pipeline: PII redaction → AI triage (intent, SLA, dedup, tags, repro script) → save draft → human review → approve.",
+  "start": { "type": "MANUAL" },
+  "nodes": [
+    {
+      "id": "submit_bug",
+      "type": "FORM",
+      "label": "Submit Bug Report",
+      "config": {
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string", "description": "Short incident title" },
+            "description": { "type": "string", "description": "Full symptom description, error logs, or steps" },
+            "reporter_email": { "type": "string", "description": "Your email (for close-the-loop notification)" }
+          },
+          "required": ["title", "description"]
+        }
+      }
+    },
+    {
+      "id": "pii_redact",
+      "type": "FUNCTION",
+      "label": "Redact PII from Report",
+      "config": {
+        "function_name": "pii_redact",
+        "input_mapping": {
+          "title": { "type": "expression", "value": "submit_bug.title" },
+          "description": { "type": "expression", "value": "submit_bug.description" }
+        }
+      }
+    },
+    {
+      "id": "run_triage",
+      "type": "AGENT",
+      "label": "AI Triage: Classify, Score, Deduplicate",
+      "config": {
+        "agent_name": "triage-agent",
+        "input_mapping": {
+          "title": { "type": "expression", "value": "pii_redact.title" },
+          "description": { "type": "expression", "value": "pii_redact.description" }
+        }
+      }
+    },
+    {
+      "id": "save_draft",
+      "type": "FUNCTION",
+      "label": "Save Enriched Bug Draft",
+      "config": {
+        "function_name": "save_bug_draft",
+        "input_mapping": {
+          "title": { "type": "expression", "value": "pii_redact.title" },
+          "description": { "type": "expression", "value": "pii_redact.description" },
+          "reporter_email": { "type": "expression", "value": "submit_bug.reporter_email", "optional": true },
+          "intent_type": { "type": "expression", "value": "run_triage.intent_type", "optional": true },
+          "category": { "type": "expression", "value": "run_triage.category", "optional": true },
+          "priority": { "type": "expression", "value": "run_triage.priority", "optional": true },
+          "sla_score": { "type": "expression", "value": "run_triage.sla_score", "optional": true },
+          "parent_id": { "type": "expression", "value": "run_triage.parent_id", "optional": true },
+          "affected_users": { "type": "expression", "value": "run_triage.affected_users", "optional": true },
+          "component_tags": { "type": "expression", "value": "run_triage.component_tags", "optional": true },
+          "reproduction_steps": { "type": "expression", "value": "run_triage.reproduction_steps", "optional": true },
+          "suggested_fix": { "type": "expression", "value": "run_triage.suggested_fix", "optional": true },
+          "repro_script": { "type": "expression", "value": "run_triage.repro_script", "optional": true },
+          "notes": { "type": "expression", "value": "run_triage.notes", "optional": true }
+        }
+      }
+    },
+    {
+      "id": "review_form",
+      "type": "FORM",
+      "label": "Human Review — Confirm or Edit Triage",
+      "config": {
+        "input_schema": {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "default": { "type": "expression", "value": "run_triage.category", "optional": true }
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["low", "normal", "high", "urgent"],
+              "default": { "type": "expression", "value": "run_triage.priority", "optional": true }
+            },
+            "sla_score": {
+              "type": "string",
+              "enum": ["P0", "P1", "P2", "P3"],
+              "default": { "type": "expression", "value": "run_triage.sla_score", "optional": true }
+            },
+            "reproduction_steps": {
+              "type": "string",
+              "default": { "type": "expression", "value": "run_triage.reproduction_steps", "optional": true }
+            },
+            "suggested_fix": {
+              "type": "string",
+              "default": { "type": "expression", "value": "run_triage.suggested_fix", "optional": true }
+            },
+            "notes": {
+              "type": "string",
+              "default": { "type": "expression", "value": "run_triage.notes", "optional": true }
+            }
+          },
+          "required": ["category", "priority", "reproduction_steps", "suggested_fix"]
+        }
+      }
+    },
+    {
+      "id": "update_bug",
+      "type": "FUNCTION",
+      "label": "Approve Bug Triage",
+      "config": {
+        "function_name": "approve_bug",
+        "input_mapping": {
+          "bug_id": { "type": "expression", "value": "save_draft.bug_id" },
+          "priority": { "type": "expression", "value": "review_form.priority" },
+          "sla_score": { "type": "expression", "value": "review_form.sla_score", "optional": true },
+          "category": { "type": "expression", "value": "review_form.category" },
+          "reproduction_steps": { "type": "expression", "value": "review_form.reproduction_steps" },
+          "suggested_fix": { "type": "expression", "value": "review_form.suggested_fix" },
+          "notes": { "type": "expression", "value": "review_form.notes", "optional": true }
+        }
+      }
+    },
+    {
+      "id": "end",
+      "type": "END",
+      "label": "Triage Complete"
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "submit_bug", "target": "pii_redact" },
+    { "id": "e2", "source": "pii_redact", "target": "run_triage" },
+    { "id": "e3", "source": "run_triage", "target": "save_draft" },
+    { "id": "e4", "source": "save_draft", "target": "review_form" },
+    { "id": "e5", "source": "review_form", "target": "update_bug" },
+    { "id": "e6", "source": "update_bug", "target": "end" }
+  ]
+}

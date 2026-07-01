@@ -1,0 +1,26 @@
+{
+  "name": "bugs",
+  "primary_key_column": "id",
+  "enable_rls": false,
+  "columns": [
+    { "name": "title", "type": "TEXT", "required": true, "max_length": 240 },
+    { "name": "description", "type": "TEXT", "required": true },
+    { "name": "category", "type": "TEXT", "max_length": 100 },
+    { "name": "priority", "type": "ENUM", "required": true, "default": "normal", "options": ["low", "normal", "high", "urgent"] },
+    { "name": "status", "type": "ENUM", "required": true, "default": "new", "options": ["new", "triaged", "approved", "resolved"] },
+    { "name": "reproduction_steps", "type": "TEXT" },
+    { "name": "suggested_fix", "type": "TEXT" },
+    { "name": "github_issue_url", "type": "TEXT", "max_length": 500 },
+    { "name": "notes", "type": "TEXT" },
+    { "name": "intent_type", "type": "ENUM", "default": "bug", "options": ["bug", "feature_request", "security_flaw", "ux_polish", "spam"] },
+    { "name": "sla_score", "type": "TEXT", "max_length": 4 },
+    { "name": "parent_id", "type": "TEXT", "max_length": 100 },
+    { "name": "duplicate_count", "type": "INTEGER", "default": 0 },
+    { "name": "affected_users", "type": "INTEGER", "default": 1 },
+    { "name": "reporter_email", "type": "TEXT", "max_length": 255 },
+    { "name": "repro_script", "type": "TEXT" },
+    { "name": "component_tags", "type": "TEXT", "max_length": 500 },
+    { "name": "stale_pinged", "type": "BOOLEAN", "default": false }
+  ],
+  "config": {}
+}

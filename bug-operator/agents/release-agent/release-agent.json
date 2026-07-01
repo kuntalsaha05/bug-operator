@@ -1,0 +1,35 @@
+{
+  "name": "release-agent",
+  "description": "Compile structured release notes from resolved bugs and save to the releases table.",
+  "instruction": { "$file": "instruction.md" },
+  "toolsets": ["POD"],
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "version": { "type": "string", "description": "The release version (e.g. v1.1.0)." },
+      "release_notes": { "type": "string", "description": "Styled markdown release notes summarizing the fixed bugs." }
+    },
+    "required": ["version", "release_notes"]
+  },
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "bugs",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read"
+        ]
+      },
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "releases",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read",
+          "datastore.record.write"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "bug-operator",
+  "description": "AI Bug Triage & Release Operator Pod",
+  "format_version": 1
+}

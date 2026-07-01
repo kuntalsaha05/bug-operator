@@ -1,0 +1,29 @@
+{
+  "name": "bug-desk",
+  "description": "Premium dark-mode bug triage and release management desk.",
+  "public_slug": "bug-desk",
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "bugs",
+        "actions": ["table.read", "table.write"]
+      },
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "releases",
+        "actions": ["table.read", "table.write"]
+      },
+      {
+        "resource_type": "workflow",
+        "resource_name": "triage-workflow",
+        "actions": ["workflow.read", "workflow.run"]
+      },
+      {
+        "resource_type": "agent",
+        "resource_name": "release-agent",
+        "actions": ["agent.execute"]
+      }
+    ]
+  }
+}

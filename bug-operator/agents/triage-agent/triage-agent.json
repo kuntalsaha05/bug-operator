@@ -1,0 +1,77 @@
+{
+  "name": "triage-agent",
+  "description": "Senior triage agent: classifies intent, deduplicates semantically, assigns SLA scores, generates component tags and reproduction scripts.",
+  "instruction": { "$file": "instruction.md" },
+  "toolsets": ["POD"],
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "intent_type": {
+        "type": "string",
+        "enum": ["bug", "feature_request", "security_flaw", "ux_polish", "spam"],
+        "description": "The classified type of the incoming report."
+      },
+      "category": {
+        "type": "string",
+        "description": "Human-readable component category (e.g. Authentication, Billing)."
+      },
+      "priority": {
+        "type": "string",
+        "enum": ["low", "normal", "high", "urgent"],
+        "description": "Triage priority level."
+      },
+      "sla_score": {
+        "type": "string",
+        "enum": ["P0", "P1", "P2", "P3"],
+        "description": "Dynamic SLA severity score."
+      },
+      "parent_id": {
+        "type": "string",
+        "description": "ID of the parent/original ticket if this is a duplicate. Empty string if not a duplicate."
+      },
+      "affected_users": {
+        "type": "integer",
+        "description": "Estimated number of users impacted."
+      },
+      "component_tags": {
+        "type": "string",
+        "description": "Comma-separated component tags, e.g. #auth, #billing"
+      },
+      "reproduction_steps": {
+        "type": "string",
+        "description": "Numbered reproduction steps."
+      },
+      "suggested_fix": {
+        "type": "string",
+        "description": "Root cause and concrete fix suggestion."
+      },
+      "repro_script": {
+        "type": "string",
+        "description": "Minimal runnable terminal command (curl, Playwright, or Python requests) to reproduce the bug."
+      },
+      "notes": {
+        "type": "string",
+        "description": "Additional triage observations or duplicate link explanation."
+      }
+    },
+    "required": ["intent_type", "category", "priority", "sla_score", "reproduction_steps", "suggested_fix", "repro_script"]
+  },
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "bugs",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read",
+          "datastore.record.write"
+        ]
+      },
+      {
+        "resource_type": "folder",
+        "resource_name": "/docs",
+        "permission_ids": ["folder.read"]
+      }
+    ]
+  }
+}

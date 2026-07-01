@@ -1,0 +1,19 @@
+{
+  "name": "approve_bug",
+  "description": "Approve a bug, updating its triage status and other metadata.",
+  "type": "API",
+  "code": { "$file": "code.py" },
+  "permissions": {
+    "grants": [
+      {
+        "resource_type": "datastore_table",
+        "resource_name": "bugs",
+        "permission_ids": [
+          "datastore.table.read",
+          "datastore.record.read",
+          "datastore.record.write"
+        ]
+      }
+    ]
+  }
+}
