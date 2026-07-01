@@ -1011,16 +1011,18 @@
     <div class="auth-cut-line"></div>
     <div class="auth-title">// ACCESS CONTROL</div>
     <div class="auth-heading">INITIALIZE<br>CONNECTION</div>
-    <div class="auth-desc">Authentication required to access the triage mainframe. Connect via your Lemma access token.</div>
+    <div class="auth-desc">Authentication required. Connect via your Lemma access token.</div>
     <div class="form-group">
       <label class="field-label">// Access Token</label>
       <input type="text" id="auth-token-input" class="field-input" placeholder="Paste token here...">
     </div>
     <button onclick="saveTokenAndLogin()" class="btn-red">CONNECT TO POD</button>
-    <button onclick="redirectToLemmaAuth()" class="btn-ghost">SIGN IN VIA BROWSER</button>
+    <button onclick="window.open('https://lemma.work', '_blank')" class="btn-ghost">OPEN LEMMA DASHBOARD ↗</button>
     <div class="auth-hint">
-      Obtain token via terminal: <code>lemma auth print-token</code><br>
-      Paste above and press CONNECT.
+      <strong style="color:rgba(255,255,255,0.5);">How to get your token:</strong><br>
+      1. Open a terminal<br>
+      2. Run: <code>lemma auth print-token</code><br>
+      3. Copy the output and paste it above
     </div>
   </div>
 </div>
