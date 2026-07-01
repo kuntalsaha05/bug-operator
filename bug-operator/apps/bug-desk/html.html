@@ -1435,22 +1435,26 @@
 
 
   function redirectToLemmaAuth() {
+    // Use the Lemma-injected authUrl from window.__LEMMA_CONFIG__
+    // The host always injects { podId, apiUrl, authUrl } at serve time
+    const cfg = window.__LEMMA_CONFIG__ || {};
+
+    if (cfg.authUrl) {
+      const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+      window.location.href = cfg.authUrl + '?redirectUrl=' + returnUrl;
+      return;
+    }
+
+    // Fallback: SDK method (works when config is available via LemmaClient)
     try {
-      // Try SDK method first
       if (client && client.auth && typeof client.auth.redirectToAuth === 'function') {
         client.auth.redirectToAuth();
         return;
       }
-      // Fallback: build the Lemma OAuth redirect URL manually
-      const cfg = window.__LEMMA_CONFIG__ || {};
-      const base = (cfg.apiUrl || 'https://api.lemma.work').replace(/\/$/, '');
-      const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
-      window.location.href = `${base}/st/auth?redirectUrl=${returnUrl}`;
-    } catch(e) {
-      // Last-resort fallback
-      const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
-      window.location.href = `https://api.lemma.work/st/auth?redirectUrl=${returnUrl}`;
-    }
+    } catch(e) {}
+
+    // Last resort: show clear instructions
+    alert('Browser sign-in is not available in this context.\n\nPlease use the terminal to get your token:\n  lemma auth print-token\n\nThen paste it in the field above.');
   }
 
   function logout() {
