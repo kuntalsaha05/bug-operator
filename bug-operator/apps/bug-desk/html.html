@@ -1128,8 +1128,22 @@
       <div id="workspace-topbar">
         <div class="topbar-info">INCIDENT BOARD // <span id="tb-count">0</span> ACTIVE</div>
         <div class="topbar-user">
-          <div class="topbar-email" id="topbar-user-email">—</div>
-          <div class="topbar-role">Admin Operator</div>
+          <div style="text-align:right;">
+            <div class="topbar-email" id="topbar-user-email">—</div>
+            <div class="topbar-role">Admin Operator</div>
+          </div>
+          <button onclick="logout()" title="Sign out" style="
+            background:transparent;border:1px solid rgba(255,255,255,0.1);
+            color:rgba(255,255,255,0.35);font-family:'JetBrains Mono',monospace;
+            font-size:8px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+            padding:6px 12px;cursor:pointer;transition:border-color 0.2s,color 0.2s;
+            display:flex;align-items:center;gap:5px;
+          " onmouseover="this.style.borderColor='rgba(239,68,68,0.5)';this.style.color='#ef4444';"
+             onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.35)';"
+          >
+            <i data-lucide="log-out" style="width:10px;height:10px;"></i>
+            LOGOUT
+          </button>
         </div>
       </div>
 
@@ -1422,6 +1436,11 @@
   function redirectToLemmaAuth() {
     if (client) client.auth.redirectToAuth();
     else alert('SDK not loaded yet. Please wait.');
+  }
+
+  function logout() {
+    localStorage.removeItem('lemma_token');
+    location.reload();
   }
 
   // ─── Data ───────────────────────────────────────────────
