@@ -1435,26 +1435,17 @@
 
 
   function redirectToLemmaAuth() {
-    // Use the Lemma-injected authUrl from window.__LEMMA_CONFIG__
-    // The host always injects { podId, apiUrl, authUrl } at serve time
-    const cfg = window.__LEMMA_CONFIG__ || {};
-
-    if (cfg.authUrl) {
-      const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
-      window.location.href = cfg.authUrl + '?redirectUrl=' + returnUrl;
+    // The SDK's redirectToAuth() uses the correct authUrl and sets redirect_uri properly.
+    // client is always initialized before the auth overlay appears, so this is safe.
+    if (client && client.auth) {
+      client.auth.redirectToAuth();
       return;
     }
-
-    // Fallback: SDK method (works when config is available via LemmaClient)
-    try {
-      if (client && client.auth && typeof client.auth.redirectToAuth === 'function') {
-        client.auth.redirectToAuth();
-        return;
-      }
-    } catch(e) {}
-
-    // Last resort: show clear instructions
-    alert('Browser sign-in is not available in this context.\n\nPlease use the terminal to get your token:\n  lemma auth print-token\n\nThen paste it in the field above.');
+    // Fallback: SDK not ready yet — use the known Lemma auth URL with correct redirect_uri param
+    const cfg = window.__LEMMA_CONFIG__ || {};
+    const authBase = (cfg.authUrl || 'https://lemma.work/auth').replace(/\/$/, '');
+    const redirectUri = encodeURIComponent(window.location.href);
+    window.location.href = authBase + '?redirect_uri=' + redirectUri;
   }
 
   function logout() {
